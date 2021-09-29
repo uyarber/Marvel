@@ -1,0 +1,100 @@
+import csv
+from textindex import textindex
+import os
+import string
+
+
+textfile = "/home/class/SoftDev/marvel/marvel-wikia-data.csv"
+
+
+ # Go through file and create a list of acharacter attributes
+def createCharList(textfile):
+    charList = []
+    with open(textfile) as file:
+        for line in file:
+            line = line.strip()
+            new_char = character(line)
+            charList.append(new_char)
+        return charList
+
+  # Remove all punctuation from a string
+def removePunctuation(s):
+  for x in string.punctuation:
+    s = s.replace(x,"")
+  return
+ # Create index and character
+class charIndex:
+    def __init__(self, listOfChars):
+        self.index = {}
+        i = 0
+        for c in listOfChars:
+            # Clean how special characters ...
+            name = removePunctuation(c.name)
+            names = c.name.split(" ")
+            for name in names:
+                if name in self.index:
+                    self.index[name].append(i)
+                else:
+                    self.index[name] = [i]
+            i = i + 1
+        return
+
+# Find speficific line! info!
+class character:
+    def __init__(self, line : str):
+        data = line.split(",")
+        self.page_identity = data[0]
+        self.name = data[1]
+        self.urlslug = data[2]
+        self.ID = data[3]
+        self.align = data[4]
+        self.eyeColor = data[5]
+        self.hairColor = data[6]
+        self.sex = data[7]
+        self.live = data[8]
+        self.apperance = data[9]
+        self.year = data[10]
+    def __str__(self):
+        str = "Name:"+self.name+"\n"
+        str = "Page identity:"+self.page_identity+"\n"
+        str += "Align:"+self.align+"\n"
+        str += "Eye color:"+self.eyeColor+"\n"
+        str += "Hair color:"+self.hairColor+"\n"
+        str += "Sex:"+self.sex+"\n"
+        str += "Live:"+self.live+"\n"
+        str += "Apperance:"+self.apperance+"\n"
+        str += "Year:"+self.year
+        return str
+
+
+
+def lookupWords(textfile, cList, cIndex):
+# All user to lookup word matches
+  name = input("\nEnter name to look up, return to end:")
+  while name != "":
+      name = name.replace(name[0], name[0].upper())
+      nameResultsList = []
+      if name in cIndex.index:
+        list = cIndex.index[name]
+        c = 1
+        nameResults = {}
+        for x in list:
+            print(str(c)+". "+cList[x].name)
+            c+= 1
+        selNum = int(input("\nSelect number:"))
+        if selNum in range(c):
+            pos = selNum-1
+            print(cList[list[pos]])
+        else:
+            print(name,"not found")
+            name=input("\nEnter word to look up, return to end:")
+
+
+  else:
+            print(name,"not found")
+            name=input("\nEnter word to look up, return to end:")
+
+
+cList = createCharList(textfile)
+cIndex = charIndex(cList)
+lookupWords(textfile, cList, cIndex)
